@@ -1,0 +1,25 @@
+# https://kbdfans.com/products/dz68rgb-hot-swap-rgb-pcb
+# https://docs.google.com/document/d/111qx6Qec4JqtIhWaZlMND-VuRnFtn9a-gJaHN8fsL7M
+
+# QMK installs sooooo much crap just to do a build. Easier to clean up with a container.
+
+docker pull debian
+docker run -it debian
+  apt-get update
+  apt-get install git python3-pip sudo
+  python3 -m pip install --user qmk
+  export PATH=~/.local/bin:$PATH
+  git clone --recurse-submodules https://github.com/daumiller/qmk_dz65_custom.git
+  cd qmk_dz65_custom
+    qmk setup daumiller/qmk_dz65_custom
+    make git-submodule
+    make dztech/dz65rgb/v3:daumiller // OR: qmk compile -kb dztech/dz65rgb/v3 -km daumiller
+    find . -name "*.bin"
+    cp ./dztech_dz65rgb_v3_daumiller.bin /dz65.bin
+[outside of running docker]
+  [copy id of container from docker listing]
+  docker cp $CONTAINER_ID:/dz65.bin ./dz65.bin
+[Connect Keyboard with Flash button pressed]
+  copy bin file, renamed to FLASH.BIN, to keyboard's volume
+  # mv /Volumes/KBDFANS\ \ /FLASH.BIN ./
+  # cp dz65.bin /Volumes/KBDFANS\ \ /FLASH.BIN
